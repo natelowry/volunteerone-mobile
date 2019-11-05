@@ -358,7 +358,6 @@ export default class App extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "blue",
     flex: 1,
     paddingTop: Platform.OS === "android" && ExpoConstants.statusBarHeight > 24 ? 10 : 0,
   },
