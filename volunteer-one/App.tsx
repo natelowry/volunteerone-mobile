@@ -1,7 +1,8 @@
 import ExpoConstants from "expo-constants";
 import moment from "moment";
 import React from 'react';
-import { Platform, StatusBar, SafeAreaView, StyleSheet, AsyncStorage, Picker, DatePickerAndroid, DatePickerIOS, Text } from 'react-native';
+import { Platform, StatusBar, StyleSheet, AsyncStorage, Picker, DatePickerAndroid, DatePickerIOS, Text } from 'react-native';
+import { SafeAreaView } from "react-navigation";
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
@@ -71,7 +72,6 @@ export default class App extends React.Component<Props, State> {
     }
   };
 
-  //TODO: params
   _logActivity = async () => {
     this.setState({ isAddingActivity: true });
 
