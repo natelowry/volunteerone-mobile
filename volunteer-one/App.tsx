@@ -1,6 +1,7 @@
 import ExpoConstants from "expo-constants";
+import moment from "moment";
 import React from 'react';
-import { Platform, StatusBar, SafeAreaView, StyleSheet, AsyncStorage, Picker } from 'react-native';
+import { Platform, StatusBar, SafeAreaView, StyleSheet, AsyncStorage, Picker, DatePickerAndroid, DatePickerIOS } from 'react-native';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
@@ -33,7 +34,7 @@ interface Props {
 
 export default class App extends React.Component<Props, State> {
   state = {
-    date: new Date(), //TODO: moment, fix utc
+    date: new Date(),
     email: '',
     isAddingActivity: false,
     isLoadingComplete: false,
@@ -105,6 +106,20 @@ export default class App extends React.Component<Props, State> {
     }
   }
 
+  private getDateAndroid = async () => {
+    try {
+      const result = await DatePickerAndroid.open({
+        date: this.state.date,
+        mode: "default",
+      });
+      if (result.action !== DatePickerAndroid.dismissedAction) {
+        this.setState({ date: moment([result.year, result.month, result.day]).toDate() });
+      }
+    } catch ({ code, message }) {
+      console.warn("Cannot open date picker", message);
+    }
+  }
+
   async componentDidMount() { }
 
   render() {
@@ -158,6 +173,26 @@ export default class App extends React.Component<Props, State> {
               Sign in
             </Button>
             <Divider />
+            {
+              Platform.select({
+                // soon less shenanigans w/ https://github.com/react-native-community/react-native-datetimepicker
+                android:
+                  <Button
+                    style={{ margin: 10 }}
+                    mode="outlined" icon="calendar"
+                    onPress={() => this.getDateAndroid()}>
+                    {moment(this.state.date).format("l")}
+                  </Button>
+                ,
+                ios:
+                  <DatePickerIOS
+                    style={{ margin: 10 }}
+                    mode="date"
+                    date={this.state.date}
+                    onDateChange={(date) => this.setState({ date })} />
+                ,
+              })
+            }
             <Picker
               style={{ width: "80%", alignSelf: "center", maxHeight: 180, justifyContent: "center" }}
               selectedValue={this.state.organization}
