@@ -1,7 +1,7 @@
 import ExpoConstants from "expo-constants";
 import moment from "moment";
 import React from 'react';
-import { Platform, StatusBar, SafeAreaView, StyleSheet, AsyncStorage, Picker, DatePickerAndroid, DatePickerIOS } from 'react-native';
+import { Platform, StatusBar, SafeAreaView, StyleSheet, AsyncStorage, Picker, DatePickerAndroid, DatePickerIOS, Text } from 'react-native';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
@@ -21,6 +21,7 @@ const theme = {
 interface State {
   date: Date,
   email: string,
+  hours: number,
   isAddingActivity: boolean,
   isLoadingComplete: boolean,
   isSigningIn: boolean,
@@ -36,6 +37,7 @@ export default class App extends React.Component<Props, State> {
   state = {
     date: new Date(),
     email: '',
+    hours: 1,
     isAddingActivity: false,
     isLoadingComplete: false,
     isSigningIn: false,
@@ -89,7 +91,7 @@ export default class App extends React.Component<Props, State> {
           "OrganizationId": this.state.organization,
           "DatePerformed": this.state.date.toISOString().substr(0, 10),
           "Notes": "TEST",
-          "Hours": 1,
+          "Hours": this.state.hours.toFixed(1),
           "ActivityStatus": 2, //2-confirmed
           "IsSkillsBased": false,
           "IsDuringWorkHours": false
@@ -173,6 +175,7 @@ export default class App extends React.Component<Props, State> {
               Sign in
             </Button>
             <Divider />
+            <Text>Date:</Text>
             {
               Platform.select({
                 // soon less shenanigans w/ https://github.com/react-native-community/react-native-datetimepicker
@@ -193,10 +196,22 @@ export default class App extends React.Component<Props, State> {
                 ,
               })
             }
+
+            <Text>Hours:</Text>
+            <Picker
+              style={{ width: "80%", alignSelf: "center", maxHeight: 180, justifyContent: "center" }}
+              selectedValue={this.state.hours}
+              onValueChange={hours => this.setState({ hours })}>
+              {Array.from({ length: 20 }).map((_value, i) =>
+                <Picker.Item key={i / 2.0} label={(i / 2.0).toString()} value={i / 2.0} />
+              )}
+            </Picker>
+
+            <Text>Organization:</Text>
             <Picker
               style={{ width: "80%", alignSelf: "center", maxHeight: 180, justifyContent: "center" }}
               selectedValue={this.state.organization}
-              onValueChange={(value) => this.setState({ organization: value })}>
+              onValueChange={organization => this.setState({ organization })}>
               <Picker.Item key="2005" label="TeamMates Mentoring Program - Lincoln" value="2005" />
               <Picker.Item key="2085" label="Lincoln Parks & Recreation" value="2085" />
               <Picker.Item key="2001" label="Boys and Girls Club of Lincoln/Lancaster County" value="2001" />
